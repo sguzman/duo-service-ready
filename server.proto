@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service Conf {
+    rpc GetKey (ConfKey) returns (ConfValue) {}
+	rpc SetKey (ConfKeyValue) returns (Ack) {}
+}
+
+message ConfKey {
+    string key = 1;
+}
+
+message ConfValue {
+    string value = 1;
+}
+
+message ConfKeyValue {
+	string key = 1;
+	string value = 2;
+}
+
+message Ack {
+	bool ok = 1;
+}
