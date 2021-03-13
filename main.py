@@ -73,10 +73,10 @@ class Server(server_pb2_grpc.ReadyServicer):
         return server_pb2.ReadyStatus(ready=value)
 
     def GetInventory(self, request, context):
-        obj: server_pb2.ReadyList = server.pb2.ReadyList(entry=[])
+        obj: server_pb2.ReadyList = server_pb2.ReadyList(entry=[])
 
-        for k, v in cache:
-            entry = server_pb2.ReadEntry(name=k, ready=v)
+        for k, v in cache.items():
+            entry = server_pb2.ReadyEntry(name=k, ready=v)
             obj.entry.append(entry)
 
         return obj
