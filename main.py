@@ -72,6 +72,15 @@ class Server(server_pb2_grpc.ReadyServicer):
 
         return server_pb2.ReadyStatus(ready=value)
 
+    def GetInventory(self, request, context):
+        obj: server_pb2.ReadyList = server.pb2.ReadyList(entry=[])
+
+        for k, v in cache:
+            entry = server_pb2.ReadEntry(name=k, ready=v)
+            obj.entry.append(entry)
+
+        return obj
+
 
 def init() -> None:
     init_logging()

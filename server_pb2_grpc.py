@@ -24,6 +24,11 @@ class ReadyStub(object):
                 request_serializer=server__pb2.ReadyService.SerializeToString,
                 response_deserializer=server__pb2.ReadyStatus.FromString,
                 )
+        self.GetInventory = channel.unary_unary(
+                '/Ready/GetInventory',
+                request_serializer=server__pb2.ReadyStatus.SerializeToString,
+                response_deserializer=server__pb2.ReadyList.FromString,
+                )
 
 
 class ReadyServicer(object):
@@ -41,6 +46,12 @@ class ReadyServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetInventory(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ReadyServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -53,6 +64,11 @@ def add_ReadyServicer_to_server(servicer, server):
                     servicer.Ready,
                     request_deserializer=server__pb2.ReadyService.FromString,
                     response_serializer=server__pb2.ReadyStatus.SerializeToString,
+            ),
+            'GetInventory': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetInventory,
+                    request_deserializer=server__pb2.ReadyStatus.FromString,
+                    response_serializer=server__pb2.ReadyList.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -95,5 +111,22 @@ class Ready(object):
         return grpc.experimental.unary_unary(request, target, '/Ready/Ready',
             server__pb2.ReadyService.SerializeToString,
             server__pb2.ReadyStatus.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetInventory(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Ready/GetInventory',
+            server__pb2.ReadyStatus.SerializeToString,
+            server__pb2.ReadyList.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

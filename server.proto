@@ -3,6 +3,7 @@ syntax = "proto3";
 service Ready {
 	rpc RegisterService (ReadyService) returns (ReadyStatus) {}
 	rpc Ready (ReadyService) returns (ReadyStatus) {}
+	rpc GetInventory (ReadyStatus) returns (ReadyList) {}
 }
 
 message ReadyService {
@@ -11,4 +12,13 @@ message ReadyService {
 
 message ReadyStatus {
 	bool ready = 1;
+}
+
+message ReadyEntry {
+	string name = 1;
+	bool ready = 2;
+}
+
+message ReadyList {
+	repeated ReadyEntry entry = 1;
 }
