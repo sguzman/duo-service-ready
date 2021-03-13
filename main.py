@@ -11,15 +11,16 @@ import server_pb2
 import server_pb2_grpc
 
 
+name: str = 'Ready Service'
 port: str = None
-cache: Dict[str, str] = {}
+cache: Dict[str, bool] = {}
 
 
 def init_env() -> None:
     global port
-    port = os.environ['CONF_PORT']
+    port = os.environ['PORT']
 
-    logging.info('Found CONF_PORT at %s', port)
+    logging.info('Found PORT at %s', port)
 
 
 def init_atexit() -> None:
@@ -40,7 +41,7 @@ def init_logging() -> None:
 
 def init_server() -> None:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
-    server_pb2_grpc.add_ConfServicer_to_server(Server(), server)
+    server_pb2_grpc.add_ReadyServicer_to_server(Server(), server)
     server.add_insecure_port(f'localhost:{port}')
 
     server.start()
@@ -50,21 +51,26 @@ def init_server() -> None:
     logging.info('Ending server')
 
 
-class Server(server_pb2_grpc.ConfServicer):
-    def GetKey(self, request, context):
-        key: str = request.key
-        logging.info('Got request for key %s', key)
-        value: str = cache.get(key)
+class Server(server_pb2_grpc.ReadyServicer):
+    def RegisterService(self, request, context):
+        service: str = request.name
+        logging.info('Registering service %s', service)
+        cache[service] = False
 
-        return server_pb2.ConfValue(value=value)
+        return server_pb2.ReadyStatus(ready=False)
 
-    def SetKey(self, request, context):
-        key: str = request.key
-        value: str = request.value
-        logging.info('Set key "%s" to "%s"', key, value)
+    def Ready(self, request, context):
+        service: str = request.name
+        if service in cache:
+            logging.info('Getting status for "%s" = "%r"', key, value)
+            value: bool = cache[service]
+            return server_pb2.ReadyStatus(ready=value)
+        else:
+            logging.info('Service "%s" not found - setting to False', key)
+            value: bool = False
+            cache[service] = value
 
-        cache[key] = value
-        return server_pb2.Ack(ok=True)
+        return server_pb2.ReadyStatus(ready=value)
 
 
 def init() -> None:
